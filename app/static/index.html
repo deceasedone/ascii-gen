@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASCII Gen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1><span class="logo">&gt;_</span> ASCII Gen</h1>
+    <p class="tag">Images, GIFs and videos to coloured ASCII art</p>
+  </header>
+
+  <main class="layout">
+    <aside class="panel">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*,video/*,.gif" hidden>
+        <span class="drop-title" id="dropTitle">Drop a file or click to upload</span>
+        <span class="drop-sub" id="dropSub">PNG, JPG, WEBP, GIF, MP4, MOV, WEBM</span>
+      </label>
+      <button type="button" class="link" id="sample">or try a sample image</button>
+      <p class="hint" id="fileNote" hidden></p>
+
+      <fieldset>
+        <legend>Style</legend>
+        <div class="seg small" data-name="mode">
+          <button type="button" data-value="ascii" class="on">ASCII</button>
+          <button type="button" data-value="hybrid">Hybrid</button>
+          <button type="button" data-value="braille">Braille</button>
+          <button type="button" data-value="ramp">Ramp</button>
+          <button type="button" data-value="text">Text</button>
+        </div>
+        <p class="hint" id="modeHint"></p>
+        <div id="rampRow" hidden>
+          <div class="seg small" data-name="ramp">
+            <button type="button" data-value="simple" class="on">Simple</button>
+            <button type="button" data-value="detailed">Detailed</button>
+            <button type="button" data-value="blocks">Blocks</button>
+            <button type="button" data-value="binary">Binary</button>
+            <button type="button" data-value="custom">Custom</button>
+          </div>
+        </div>
+        <div class="field" id="customRow" hidden>
+          <label for="custom_chars">Your characters, any order</label>
+          <input type="text" id="custom_chars" maxlength="64" placeholder=" .oO@" value="">
+        </div>
+        <div class="field" id="textRow" hidden>
+          <label for="text">Phrase to fill the picture with</label>
+          <input type="text" id="text" maxlength="200" value="ASCII ">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Detail</legend>
+        <div class="range">
+          <label for="columns">Columns <output id="columnsOut"></output></label>
+          <input type="range" id="columns" min="40" max="500" step="10" value="500">
+        </div>
+        <div class="range">
+          <label for="font_size">Cell size <output id="font_sizeOut"></output></label>
+          <input type="range" id="font_size" min="6" max="20" step="1" value="12">
+        </div>
+        <div class="range" id="detailRow">
+          <label for="detail">Edge tracing <output id="detailOut"></output></label>
+          <input type="range" id="detail" min="0" max="1" step="0.05" value="0.6">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Colour</legend>
+        <div class="seg themes" data-name="theme" id="themes">
+          <button type="button" data-value="original" class="on"><i class="swatch original"></i>Original</button>
+        </div>
+        <div class="range">
+          <label for="color_boost">Brightness <output id="color_boostOut"></output></label>
+          <input type="range" id="color_boost" min="0.5" max="3" step="0.1" value="2">
+        </div>
+        <div class="range" id="saturationRow">
+          <label for="saturation">Saturation <output id="saturationOut"></output></label>
+          <input type="range" id="saturation" min="0" max="2" step="0.1" value="1">
+        </div>
+        <div id="backgroundRow">
+          <div class="seg" data-name="background">
+            <button type="button" data-value="black" class="on">Black background</button>
+            <button type="button" data-value="tinted">Tinted background</button>
+          </div>
+        </div>
+        <div class="range" id="tintRow" hidden>
+          <label for="bg_strength">Tint strength <output id="bg_strengthOut"></output></label>
+          <input type="range" id="bg_strength" min="0.05" max="0.6" step="0.05" value="0.25">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Focus</legend>
+        <div class="seg" data-name="focus">
+          <button type="button" data-value="off" class="on">Off</button>
+          <button type="button" data-value="dim">Dim background</button>
+          <button type="button" data-value="hide">Hide background</button>
+        </div>
+        <p class="hint" id="focusHint" hidden>Finds the main subject (a person, animal or object) and fades or removes everything else. Takes a little longer.</p>
+      </fieldset>
+
+      <button type="button" class="btn subtle" id="reset">Reset to defaults</button>
+
+      <fieldset id="formatRow" hidden>
+        <legend>Output</legend>
+        <div class="seg local" data-name="format">
+          <button type="button" data-value="gif">GIF</button>
+          <button type="button" data-value="mp4" class="on">MP4</button>
+        </div>
+        <p class="hint">Shorter videos have fewer frames, so they convert faster. Trim long videos to the part you need. MP4 keeps the audio; GIF has none.</p>
+      </fieldset>
+
+      <div class="actions">
+        <a class="btn primary" id="downloadPng" hidden download="ascii.png">Download PNG</a>
+        <button class="btn primary" id="renderVideo" type="button" hidden>Render MP4</button>
+        <div class="progress" id="progress" hidden><div class="bar" id="bar"></div><span id="progressText"></span></div>
+        <a class="btn" id="downloadVideo" hidden download="ascii.mp4">Download MP4</a>
+        <p class="error" id="error" hidden></p>
+      </div>
+
+      <fieldset id="share" hidden>
+        <legend>Share</legend>
+        <div class="pair">
+          <button class="btn" id="copyImage" type="button">Copy image</button>
+          <button class="btn" id="copyText" type="button">Copy as text</button>
+        </div>
+        <p class="hint">Copy image pastes the coloured picture into any chat. Copy as text keeps the colours in Docs, Word or email.</p>
+        <div class="chat">
+          <div class="range">
+            <label for="chatColumns">Chat width <output id="chatColumnsOut"></output></label>
+            <input type="range" id="chatColumns" min="20" max="120" step="2" value="50">
+          </div>
+          <div class="seg small local" data-name="chatStyle">
+            <button type="button" data-value="ascii" class="on">ASCII</button>
+            <button type="button" data-value="braille">Braille dots</button>
+          </div>
+          <div class="seg small local" data-name="chatTheme">
+            <button type="button" data-value="dark" class="on">Dark chat</button>
+            <button type="button" data-value="light">Light chat</button>
+          </div>
+          <button class="btn" id="copyChat" type="button">Copy text for chat</button>
+          <p class="hint" id="chatHint">ASCII is wrapped in a ``` code block so it lines up in Discord, Slack, WhatsApp, Telegram and ChatGPT. Braille dots line up without one.</p>
+        </div>
+      </fieldset>
+    </aside>
+
+    <section class="stage">
+      <div class="view">
+        <div class="view-head">
+          <span>Original</span>
+        </div>
+        <div class="frame" id="original"><p class="empty">Nothing loaded yet</p></div>
+      </div>
+      <div class="view">
+        <div class="view-head">
+          <span id="resultLabel">ASCII</span>
+          <span class="meta" id="resultMeta"></span>
+        </div>
+        <div class="frame" id="result" title="Click to toggle 1:1 zoom"><p class="empty">Upload something to see it here</p></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
